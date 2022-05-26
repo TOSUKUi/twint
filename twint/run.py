@@ -89,7 +89,7 @@ class Twint:
                     self.feed, self.init = feed.Follow(response)
                     if not self.count % 40:
                         time.sleep(5)
-                elif self.config.Profile or self.config.TwitterSearch:
+                elif self.config.Profile or self.config.TwitterSearch or self.config.Quote:
                     try:
                         self.feed, self.init = feed.parse_tweets(self.config, response)
                     except NoMoreTweetsException as e:
@@ -224,6 +224,19 @@ class Twint:
             for tweet in self.feed:
                 self.count += 1
                 await output.Tweets(tweet, self.config, self.conn)
+    
+    async def quotes(self):
+        await self.Feed()
+        # TODO : need to take care of this later
+        if self.config.Location:
+            logme.debug(__name__ + ':Twint:tweets:location')
+            self.count += await get.Multi(self.feed, self.config, self.conn)
+        else:
+            logme.debug(__name__ + ':Twint:tweets:notLocation')
+            for tweet in self.feed:
+                self.count += 1
+                await output.Tweets(tweet, self.config, self.conn)
+
 
     async def main(self, callback=None):
 
@@ -284,6 +297,9 @@ class Twint:
                     elif self.config.TwitterSearch:
                         logme.debug(__name__ + ':Twint:main:twitter-search')
                         await self.tweets()
+                    elif self.config.Quote:
+                        logme.debug(__name__ + ':Twint:main:quote')
+                        await self.quotes()
                 else:
                     logme.debug(__name__ + ':Twint:main:no-more-tweets')
                     break
@@ -408,5 +424,17 @@ def Search(config, callback=None):
     config.Followers = False
     config.Profile = False
     run(config, callback)
+    if config.Pandas_au:
+        storage.panda._autoget("tweet")
+
+def Quote(config, callback=None):
+    logme.debug(__name__ + ':Search')
+    config.Profile = False
+    config.Favorites = False
+    config.Following = False
+    config.Followers = False
+    config.TwitterSearch = False
+    config.Quote = True
+    run(config)
     if config.Pandas_au:
         storage.panda._autoget("tweet")

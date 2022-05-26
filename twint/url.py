@@ -165,6 +165,41 @@ async def Search(config, init):
     _serialQuery = _sanitizeQuery(url, params)
     return url, params, _serialQuery
 
+async def Quote(config, init=None):
+    logme.debug(__name__ + ':Quote')
+    _url = base
+    params = [
+        ('include_profile_interstitial_type', '1'),
+        ('include_blocking', '1'),
+        ('include_blocked_by', '1'),
+        ('include_followed_by', '1'),
+        ('include_want_retweets', '1'),
+        ('include_mute_edge', '1'),
+        ('include_can_dm', '1'),
+        ('include_can_media_tag', '1'),
+        ('skip_status', '1'),
+        ('cards_platform', 'Web-12'),
+        ('include_cards', '1'),
+        ('include_ext_alt_text', 'true'),
+        ('include_quote_count', 'true'),
+        ('include_reply_count', '1'),
+        ('tweet_mode', 'extended'),
+        ('include_entities', 'true'),
+        ('include_user_entities', 'true'),
+        ('include_ext_media_color', 'true'),
+        ('include_ext_media_availability', 'true'),
+        ('send_error_codes', 'true'),
+        ('simple_quoted_tweet', 'true'),
+        ('q', f"quoted_tweet_id%3A{config.tweet_id}"),
+        ('vertical', 'tweet_detail_quote'),
+        ('count', '20'),
+        ('pc', '1'),
+        ('spelling_corrections', '1'),
+        ('ext', 'mediaStats%2ChighlightedLabel%2CvoiceInfo')
+    ]
+
+    _serialQuery = _sanitizeQuery(_url, params)
+    return _url, params, _serialQuery
 
 def SearchProfile(config, init=None):
     logme.debug(__name__ + ':SearchProfile')

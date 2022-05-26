@@ -117,6 +117,9 @@ async def RequestUrl(config, init):
     if config.Profile:
         logme.debug(__name__ + ':RequestUrl:Profile')
         _url, params, _serialQuery = url.SearchProfile(config, init)
+    elif config.Quote:
+        logme.debug(__name__ + ':RequestUrl:Quote')
+        _url, params, _serialQuery = await url.Quote(config, init)
     elif config.TwitterSearch:
         logme.debug(__name__ + ':RequestUrl:TwitterSearch')
         _url, params, _serialQuery = await url.Search(config, init)
@@ -131,7 +134,6 @@ async def RequestUrl(config, init):
             logme.debug(__name__ + ':RequestUrl:Favorites')
             _url = await url.Favorites(config.Username, init)
         _serialQuery = _url
-
     response = await Request(_url, params=params, connector=_connector, headers=_headers)
 
     if config.Debug:
@@ -158,6 +160,7 @@ def ForceNewTorIdentity(config):
 async def Request(_url, connector=None, params=None, headers=None):
     logme.debug(__name__ + ':Request:Connector')
     async with aiohttp.ClientSession(connector=connector, headers=headers) as session:
+        import pdb; pdb.set_trace() # 追加
         return await Response(session, _url, params)
 
 
